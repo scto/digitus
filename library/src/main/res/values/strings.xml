@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="fingerprint_description">Confirm fingerprint to continue.</string>
+    <string name="fingerprint_hint">Touch sensor</string>
+    <string name="password">Password</string>
+    <string name="password_description">Enter your password to continue.</string>
+    <string name="use_fingerprint_in_future">Use fingerprint in the future</string>
+    <string name="new_fingerprint_enrolled_description">A new fingerprint was added to this device, so your password is required.</string>
+    <string name="sign_in">Sign In</string>
+    <string name="fingerprint_not_recognized">Fingerprint not recognized. Try again.</string>
+    <string name="password_not_recognized">Password not recognized. Try again.</string>
+    <string name="fingerprint_success">Fingerprint recognized</string>
+    <string name="use_password">Use password</string>
+
+</resources>

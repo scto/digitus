@@ -1,0 +1,12 @@
+<resources>
+
+    <string name="app_name">Digitus</string>
+    <string name="begin_authentication">Begin Authentication</string>
+    <string name="status_initializing">Initializing…</string>
+    <string name="status_ready">Ready to authenticate!</string>
+    <string name="status_registration_needed">Register your fingerprint in the device\'s system settings!</string>
+    <string name="status_authenticated">Authentication successful!</string>
+    <string name="status_error">Error: %1$s</string>
+    <string name="open_security_settings">Open Security Settings</string>
+
+</resources>
