@@ -1,7 +1,5 @@
 package com.afollestad.digitus;
 
-import android.support.annotation.NonNull;
-
 /**
  * @author Aidan Follestad (afollestad)
  */

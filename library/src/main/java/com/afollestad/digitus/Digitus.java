@@ -39,7 +39,7 @@ public class Digitus extends DigitusBase {
         return mInstance;
     }
 
-    public static boolean isReady() {
+    public boolean isReady() {
         return mInstance != null && mInstance.mIsReady;
     }
 
@@ -80,7 +80,7 @@ public class Digitus extends DigitusBase {
         }
     }
 
-    public static <T extends Activity & DigitusCallback> void init(T context, String keyName, int requestCode) {
+    public static <T extends Activity & DigitusCallback> Digitus init(T context, String keyName, int requestCode) {
         mInstance = new Digitus(context, keyName);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             mInstance.mRequestCode = requestCode;
@@ -89,6 +89,7 @@ public class Digitus extends DigitusBase {
                 ActivityCompat.requestPermissions(context, new String[]{Manifest.permission.USE_FINGERPRINT}, requestCode);
             else finishInit();
         } else finishInit();
+        return mInstance;
     }
 
     public static void deinit() {
