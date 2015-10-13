@@ -215,6 +215,7 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
     private void updateStage(@Nullable MaterialDialog dialog) {
         if (dialog == null)
             dialog = (MaterialDialog) getDialog();
+        if (dialog == null) return;
         switch (mStage) {
             case FINGERPRINT:
                 dialog.setActionButton(DialogAction.POSITIVE, android.R.string.cancel);
