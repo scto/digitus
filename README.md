@@ -5,6 +5,9 @@ On API levels below Marshmallow, it will fall back to a password dialog.
 
 ![Art](https://raw.githubusercontent.com/afollestad/digitus/master/art.jpg)
 
+**Note**: this library is powered by [material-dialogs](https://github.com/afollestad/material-dialogs),
+depending on this library will automatically depend on Material Dialogs. 
+
 # Testing Fingerprints from an Emulator
 
 The stock Android emulator allows you to test Nexus Imprint. If you create a Nexus 5X emulator,
