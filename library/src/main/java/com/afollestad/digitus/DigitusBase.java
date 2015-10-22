@@ -28,6 +28,8 @@ import javax.crypto.SecretKey;
 @TargetApi(Build.VERSION_CODES.M)
 class DigitusBase {
 
+    protected static Digitus mInstance;
+
     protected <T extends Activity & DigitusCallback> DigitusBase(T context, String keyName) {
         mKeyName = keyName;
         mCallback = context;
@@ -43,7 +45,20 @@ class DigitusBase {
         mCipher = null;
     }
 
-    private String mKeyName;
+    public static boolean isReady() {
+        invalidate();
+        return mInstance != null && mInstance.mIsReady;
+    }
+
+    protected static void invalidate() {
+        if (mInstance == null)
+            throw new IllegalStateException("Digitus has not been initialized yet.");
+        else if (!isReady())
+            throw new IllegalStateException("Digitus is not yet ready.");
+    }
+
+    protected boolean mIsReady;
+    protected String mKeyName;
     protected DigitusCallback mCallback;
     protected KeyguardManager mKeyguardManager;
     protected FingerprintManager mFingerprintManager;
@@ -77,15 +92,16 @@ class DigitusBase {
      * Creates a symmetric key in the Android Key Store which can only be used after the user has
      * authenticated with fingerprint.
      */
-    public final void recreateKey() {
+    public static void recreateKey() {
         // The enrolling flow for fingerprint. This is where you ask the user to set up fingerprint
         // for your flow. Use of keys is necessary if you need to know if the set of
         // enrolled fingerprints has changed.
+        invalidate();
         try {
-            mKeyStore.load(null);
+            mInstance.mKeyStore.load(null);
             // Set the alias of the entry in Android KeyStore where the key will appear
             // and the constrains (purposes) in the constructor of the Builder
-            mKeyGenerator.init(new KeyGenParameterSpec.Builder(mKeyName,
+            mInstance.mKeyGenerator.init(new KeyGenParameterSpec.Builder(mInstance.mKeyName,
                     KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
                     .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
                             // Require the user to authenticate with a fingerprint to authorize every use
@@ -93,7 +109,7 @@ class DigitusBase {
                     .setUserAuthenticationRequired(true)
                     .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
                     .build());
-            mKeyGenerator.generateKey();
+            mInstance.mKeyGenerator.generateKey();
         } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException | CertificateException | IOException e) {
             throw new RuntimeException(e);
         }

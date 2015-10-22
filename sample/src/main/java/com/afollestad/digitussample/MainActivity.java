@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements DigitusCallback {
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Digitus.get().beginAuthentication();
+                Digitus.beginAuthentication();
             }
         });
     }
@@ -51,13 +51,13 @@ public class MainActivity extends AppCompatActivity implements DigitusCallback {
     }
 
     @Override
-    public void onDigitusReady(Digitus digitus) {
+    public void onDigitusReady() {
         mStatus.setText(R.string.status_ready);
         mButton.setEnabled(true);
     }
 
     @Override
-    public void onDigitusRegistrationNeeded(Digitus digitus) {
+    public void onDigitusRegistrationNeeded() {
         mStatus.setText(R.string.status_registration_needed);
         mButton.setText(R.string.open_security_settings);
         mButton.setEnabled(true);
@@ -65,24 +65,24 @@ public class MainActivity extends AppCompatActivity implements DigitusCallback {
             @Override
             public void onClick(View v) {
                 mButton.setText(R.string.begin_authentication);
-                Digitus.get().openSecuritySettings();
+                Digitus.openSecuritySettings();
             }
         });
     }
 
     @Override
-    public void onDigitusAuthenticated(Digitus digitus) {
+    public void onDigitusAuthenticated() {
         mStatus.setText(R.string.status_authenticated);
         mButton.setEnabled(true);
     }
 
     @Override
-    public void onDigitusError(Digitus digitus, Exception e) {
+    public void onDigitusError(Exception e) {
         mStatus.setText(getString(R.string.status_error, e.getMessage()));
     }
 
     @Override
-    public void onDigitusValidatePassword(Digitus digitus, String password) {
-        digitus.notifyPasswordValidation(password.equals("password"));
+    public void onDigitusValidatePassword(String password) {
+        Digitus.notifyPasswordValidation(password.equals("password"));
     }
 }

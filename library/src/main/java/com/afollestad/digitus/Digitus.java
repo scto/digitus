@@ -29,29 +29,21 @@ import javax.crypto.NoSuchPaddingException;
  */
 public class Digitus extends DigitusBase {
 
-    private static Digitus mInstance;
-
     private int mRequestCode;
     private FingerprintAuthenticationDialogFragment mFragment;
-    private boolean mIsReady;
 
-    public static Digitus get() {
-        return mInstance;
-    }
-
-    public boolean isReady() {
-        return mInstance != null && mInstance.mIsReady;
-    }
-
-    public boolean notifyPasswordValidation(boolean valid) {
-        if (mFragment == null) return false;
-        mFragment.notifyPasswordValidation(valid);
+    public static boolean notifyPasswordValidation(boolean valid) {
+        invalidate();
+        if (mInstance.mFragment == null) return false;
+        mInstance.mFragment.notifyPasswordValidation(valid);
         return true;
     }
 
-    public boolean openSecuritySettings() {
-        if (mCallback == null) return false;
-        ((Activity) mCallback).startActivity(new Intent(Settings.ACTION_SECURITY_SETTINGS));
+    public static boolean openSecuritySettings() {
+        invalidate();
+        if (mInstance.mCallback == null)
+            return false;
+        ((Activity) mInstance.mCallback).startActivity(new Intent(Settings.ACTION_SECURITY_SETTINGS));
         return true;
     }
 
@@ -102,16 +94,16 @@ public class Digitus extends DigitusBase {
 
     private static void finishInit() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (mInstance.isFingerprintRegistered()) {
+            if (isFingerprintRegistered()) {
                 mInstance.mIsReady = true;
-                mInstance.recreateKey();
-                mInstance.mCallback.onDigitusReady(mInstance);
+                recreateKey();
+                mInstance.mCallback.onDigitusReady();
             } else {
-                mInstance.mCallback.onDigitusRegistrationNeeded(mInstance);
+                mInstance.mCallback.onDigitusRegistrationNeeded();
             }
         } else {
             mInstance.mIsReady = true;
-            mInstance.mCallback.onDigitusReady(mInstance);
+            mInstance.mCallback.onDigitusReady();
         }
     }
 
@@ -121,35 +113,39 @@ public class Digitus extends DigitusBase {
             if (state[0] == PackageManager.PERMISSION_GRANTED) {
                 finishInit();
             } else {
-                mInstance.mCallback.onDigitusError(mInstance, new PermissionDeniedError());
+                mInstance.mCallback.onDigitusError(new PermissionDeniedError());
             }
         }
     }
 
-    public void beginAuthentication() {
-        if (!mIsReady)
-            throw new IllegalStateException("beginAuthentication() cannot be called until Digitus is ready.");
-        final Activity context = (Activity) mCallback;
-        mFragment = new FingerprintAuthenticationDialogFragment();
+    public static void beginAuthentication() {
+        invalidate();
+        final Activity context = (Activity) mInstance.mCallback;
+        mInstance.mFragment = new FingerprintAuthenticationDialogFragment();
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            mFragment.setStage(FingerprintAuthenticationDialogFragment.Stage.PASSWORD);
-        } else if (initCipher()) {
-            mFragment.setCryptoObject(new FingerprintManager.CryptoObject(mCipher));
-            mFragment.setStage(FingerprintAuthenticationDialogFragment.Stage.FINGERPRINT);
+            mInstance.mFragment.setStage(FingerprintAuthenticationDialogFragment.Stage.PASSWORD);
+        } else if (mInstance.initCipher()) {
+            mInstance.mFragment.setCryptoObject(new FingerprintManager.CryptoObject(mInstance.mCipher));
+            mInstance.mFragment.setStage(FingerprintAuthenticationDialogFragment.Stage.FINGERPRINT);
         } else {
-            mFragment.setCryptoObject(new FingerprintManager.CryptoObject(mCipher));
-            mFragment.setStage(FingerprintAuthenticationDialogFragment.Stage.NEW_FINGERPRINT_ENROLLED);
+            mInstance.mFragment.setCryptoObject(new FingerprintManager.CryptoObject(mInstance.mCipher));
+            mInstance.mFragment.setStage(FingerprintAuthenticationDialogFragment.Stage.NEW_FINGERPRINT_ENROLLED);
         }
 
-        mFragment.show(context.getFragmentManager(), "[fingerprint-tag]");
+        mInstance.mFragment.show(context.getFragmentManager(), "[fingerprint-tag]");
     }
 
-    public boolean isFingerprintRegistered() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return false;
-        int granted = ContextCompat.checkSelfPermission((Activity) mInstance.mCallback, Manifest.permission.USE_FINGERPRINT);
-        if (granted != PackageManager.PERMISSION_GRANTED) return false;
+    public static boolean isFingerprintRegistered() {
+        invalidate();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+            return false;
+        int granted = ContextCompat.checkSelfPermission((Activity) mInstance.mCallback,
+                Manifest.permission.USE_FINGERPRINT);
+        if (granted != PackageManager.PERMISSION_GRANTED)
+            return false;
         //noinspection ResourceType
-        return mKeyguardManager.isKeyguardSecure() && mFingerprintManager.hasEnrolledFingerprints();
+        return mInstance.mKeyguardManager.isKeyguardSecure() &&
+                mInstance.mFingerprintManager.hasEnrolledFingerprints();
     }
 }

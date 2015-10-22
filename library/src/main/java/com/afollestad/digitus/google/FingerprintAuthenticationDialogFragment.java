@@ -176,7 +176,7 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
         MaterialDialog dialog = (MaterialDialog) getDialog();
         dialog.getActionButton(DialogAction.POSITIVE).setEnabled(false);
         dialog.getActionButton(DialogAction.NEGATIVE).setEnabled(false);
-        mCallback.onDigitusValidatePassword(Digitus.get(), mPassword.getText().toString());
+        mCallback.onDigitusValidatePassword(mPassword.getText().toString());
     }
 
     public void notifyPasswordValidation(boolean valid) {
@@ -190,11 +190,11 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
             if (mStage == Stage.NEW_FINGERPRINT_ENROLLED &&
                     mUseFingerprintFutureCheckBox.isChecked()) {
                 // Re-create the key so that fingerprints including new ones are validated.
-                Digitus.get().recreateKey();
+                Digitus.recreateKey();
                 mStage = Stage.FINGERPRINT;
             }
             mPassword.setText("");
-            mCallback.onDigitusAuthenticated(Digitus.get());
+            mCallback.onDigitusAuthenticated();
             dismiss();
         } else {
             mPasswordDescriptionTextView.setText(R.string.password_not_recognized);
@@ -250,9 +250,8 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
 
     @Override
     public void onAuthenticated() {
-        // Callback from FingerprintUiHelper. Let the activity know that authentication was
-        // successful.
-        mCallback.onDigitusAuthenticated(Digitus.get());
+        // Callback from FingerprintUiHelper. Let the activity know that authentication was successful.
+        mCallback.onDigitusAuthenticated();
         dismiss();
     }
 

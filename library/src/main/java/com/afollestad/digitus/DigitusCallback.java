@@ -5,13 +5,13 @@ package com.afollestad.digitus;
  */
 public interface DigitusCallback {
 
-    void onDigitusReady(Digitus digitus);
+    void onDigitusReady();
 
-    void onDigitusRegistrationNeeded(Digitus digitus);
+    void onDigitusRegistrationNeeded();
 
-    void onDigitusAuthenticated(Digitus digitus);
+    void onDigitusAuthenticated();
 
-    void onDigitusError(Digitus digitus, Exception e);
+    void onDigitusError(Exception e);
 
-    void onDigitusValidatePassword(Digitus digitus, String password);
+    void onDigitusValidatePassword(String password);
 }
